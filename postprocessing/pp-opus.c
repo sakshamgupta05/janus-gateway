@@ -73,6 +73,12 @@ int janus_pp_opus_process(FILE *file, janus_pp_frame_packet *list, int *working)
 	uint64_t pos = 0, nextPos = 0;
 	uint8_t *buffer = g_malloc0(1500);
 	while(*working && tmp != NULL) {
+		if(tmp->prev != NULL && ((tmp->ts - tmp->prev->ts)/48/20 > 100000)) {
+			/* Drop packet as the diff in timestamp is too large */
+			JANUS_LOG(LOG_WARN, "Packet dropped because of large difference in timestamp (interval ~%"SCNu64")(time ~%"SCNu64"s)\n", (tmp->ts - tmp->prev->ts)/48/20, (tmp->ts-list->ts)/48000);
+			tmp = tmp->next;
+			continue;
+		}
 		if(tmp->prev != NULL && ((tmp->ts - tmp->prev->ts)/48/20 > 1)) {
 			JANUS_LOG(LOG_WARN, "Lost a packet here? (got seq %"SCNu16" after %"SCNu16", time ~%"SCNu64"s)\n",
 				tmp->seq, tmp->prev->seq, (tmp->ts-list->ts)/48000);

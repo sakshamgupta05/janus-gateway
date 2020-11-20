@@ -41,8 +41,8 @@ typedef struct janus_pp_rtp_header
 	uint16_t type:7;
 	uint16_t markerbit:1;
 #endif
-	uint16_t seq_number;
-	uint32_t timestamp;
+	int16_t seq_number;
+	int32_t timestamp;
 	uint32_t ssrc;
 	uint32_t csrc[16];
 } janus_pp_rtp_header;
